@@ -1,4 +1,4 @@
-package com.lgcns.theseven.modules.auth.application.dto;
+package com.lgcns.theseven.modules.auth.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

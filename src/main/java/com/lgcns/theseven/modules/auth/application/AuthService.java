@@ -1,6 +1,6 @@
 package com.lgcns.theseven.modules.auth.application;
 
-import com.lgcns.theseven.modules.auth.application.dto.*;
+import com.lgcns.theseven.modules.auth.api.dto.*;
 
 public interface AuthService {
     AuthResponse register(RegisterRequest request);

@@ -2,7 +2,7 @@ package com.lgcns.theseven.modules.auth.application;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import com.lgcns.theseven.common.unitofwork.UnitOfWork;
-import com.lgcns.theseven.modules.auth.application.dto.*;
+import com.lgcns.theseven.modules.auth.api.dto.*;
 import com.lgcns.theseven.modules.auth.domain.model.EmailOtp;
 import com.lgcns.theseven.modules.auth.domain.model.RefreshToken;
 import com.lgcns.theseven.modules.auth.domain.model.Role;
