@@ -1,7 +1,9 @@
 package com.lgcns.theseven.modules.auth.config;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
+import com.lgcns.theseven.modules.auth.application.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import com.lgcns.theseven.modules.auth.config.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtTokenProvider tokenProvider;
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2LoginSuccessHandler successHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,6 +31,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(info -> info.userService(oAuth2UserService))
+                        .successHandler(successHandler)
                 )
                 .addFilterBefore(new JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
         return http.build();
