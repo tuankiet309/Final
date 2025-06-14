@@ -1,10 +1,14 @@
-package com.lgcns.theseven.modules.auth.api.dto;
+package com.lgcns.theseven.modules.auth.application.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginRequest {
+public class RegisterRequest {
     @NotBlank
     private String username;
+    @Email
+    @NotBlank
+    private String email;
     @NotBlank
     private String password;
 
@@ -14,6 +18,14 @@ public class LoginRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

@@ -1,4 +1,4 @@
-package com.lgcns.theseven.modules.auth.infrastructure.mapper;
+package com.lgcns.theseven.modules.auth.application.mapper;
 
 
 

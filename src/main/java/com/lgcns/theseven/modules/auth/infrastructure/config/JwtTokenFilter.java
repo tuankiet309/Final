@@ -1,4 +1,4 @@
-package com.lgcns.theseven.modules.auth.config;
+package com.lgcns.theseven.modules.auth.infrastructure.config;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Claims;

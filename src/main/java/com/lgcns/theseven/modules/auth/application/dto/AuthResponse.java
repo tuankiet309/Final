@@ -1,4 +1,4 @@
-package com.lgcns.theseven.modules.auth.api.dto;
+package com.lgcns.theseven.modules.auth.application.dto;
 
 public class AuthResponse {
     private String accessToken;

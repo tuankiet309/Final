@@ -1,8 +1,8 @@
-package com.lgcns.theseven.modules.auth.config;
+package com.lgcns.theseven.modules.auth.infrastructure.config;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.RefreshTokenEntity;
-import com.lgcns.theseven.modules.auth.infrastructure.persistence.repository.RefreshTokenRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

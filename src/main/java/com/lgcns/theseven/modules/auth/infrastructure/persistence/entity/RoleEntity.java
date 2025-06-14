@@ -8,7 +8,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "roles")
-@MappedSuperclass
 public class RoleEntity extends BaseEntity  {
 
     @Column(nullable = false, unique = true)

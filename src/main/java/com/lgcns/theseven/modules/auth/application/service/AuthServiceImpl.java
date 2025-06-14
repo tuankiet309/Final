@@ -1,15 +1,14 @@
-package com.lgcns.theseven.modules.auth.application;
+package com.lgcns.theseven.modules.auth.application.service;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import com.lgcns.theseven.common.unitofwork.UnitOfWork;
-import com.lgcns.theseven.modules.auth.api.dto.*;
-import com.lgcns.theseven.modules.auth.domain.model.EmailOtp;
-import com.lgcns.theseven.modules.auth.domain.model.RefreshToken;
-import com.lgcns.theseven.modules.auth.domain.model.Role;
-import com.lgcns.theseven.modules.auth.domain.model.User;
-import com.lgcns.theseven.modules.auth.infrastructure.mapper.*;
+import com.lgcns.theseven.modules.auth.application.dto.*;
+import com.lgcns.theseven.modules.auth.application.mapper.*;
+import com.lgcns.theseven.modules.auth.domain.repository.EmailOtpRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.RefreshTokenRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.RoleRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.UserRepository;
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.*;
-import com.lgcns.theseven.modules.auth.infrastructure.persistence.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

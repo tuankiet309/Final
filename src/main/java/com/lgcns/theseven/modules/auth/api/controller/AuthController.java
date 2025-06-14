@@ -1,7 +1,7 @@
 package com.lgcns.theseven.modules.auth.api.controller;
 
-import com.lgcns.theseven.modules.auth.application.AuthService;
-import com.lgcns.theseven.modules.auth.api.dto.*;
+import com.lgcns.theseven.modules.auth.application.service.AuthService;
+import com.lgcns.theseven.modules.auth.application.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

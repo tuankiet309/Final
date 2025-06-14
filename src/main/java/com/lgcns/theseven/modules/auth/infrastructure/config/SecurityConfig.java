@@ -1,9 +1,8 @@
-package com.lgcns.theseven.modules.auth.config;
+package com.lgcns.theseven.modules.auth.infrastructure.config;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
-import com.lgcns.theseven.modules.auth.application.CustomOAuth2UserService;
+import com.lgcns.theseven.modules.auth.application.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
-import com.lgcns.theseven.modules.auth.config.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

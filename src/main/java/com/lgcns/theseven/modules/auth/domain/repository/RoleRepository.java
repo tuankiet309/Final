@@ -1,4 +1,4 @@
-package com.lgcns.theseven.modules.auth.infrastructure.persistence.repository;
+package com.lgcns.theseven.modules.auth.domain.repository;
 
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.RoleEntity;
 import com.lgcns.theseven.common.base.repository.BaseRepository;

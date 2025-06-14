@@ -1,9 +1,9 @@
-package com.lgcns.theseven.modules.auth.application;
+package com.lgcns.theseven.modules.auth.application.service;
 
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.RoleEntity;
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.UserEntity;
-import com.lgcns.theseven.modules.auth.infrastructure.persistence.repository.RoleRepository;
-import com.lgcns.theseven.modules.auth.infrastructure.persistence.repository.UserRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.RoleRepository;
+import com.lgcns.theseven.modules.auth.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

@@ -18,6 +18,9 @@ public interface BaseMapper<DTO, DOMAIN, ENTITY> {
 
     DOMAIN toDomainFromDto(DTO dto);
 
+    DTO toDtoFromEntity(ENTITY entity);
+    ENTITY toEntityFromDto(DTO dto);
+
     default List<DOMAIN> toDomainListFromEntity(List<ENTITY> entities) {
         return entities.stream().map(this::toDomain).collect(Collectors.toList());
     }
@@ -32,5 +35,11 @@ public interface BaseMapper<DTO, DOMAIN, ENTITY> {
 
     default List<DOMAIN> toDomainListFromDto(List<DTO> dtos) {
         return dtos.stream().map(this::toDomainFromDto).collect(Collectors.toList());
+    }
+    default List<ENTITY> toEntityListFromDto(List<DTO> dtos) {
+        return dtos.stream().map(this::toEntityFromDto).collect(Collectors.toList());
+    }
+    default List<DTO> toDtoListFromEntity(List<ENTITY> entities) {
+        return entities.stream().map(this::toDtoFromEntity).collect(Collectors.toList());
     }
 }
