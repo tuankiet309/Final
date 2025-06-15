@@ -37,4 +37,15 @@ public class EmailServiceImpl implements EmailService {
         message.setText("Click the following link to complete your login: " + link);
         mailSender.send(message);
     }
+
+    @Override
+    public void sendRegistrationConfirmation(String to, String token) {
+        String link = baseUrl + "/auth/confirm-email?token=" + token;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject("Email Verification");
+        message.setText("Please verify your email by clicking the following link: " + link);
+        mailSender.send(message);
+    }
 }
