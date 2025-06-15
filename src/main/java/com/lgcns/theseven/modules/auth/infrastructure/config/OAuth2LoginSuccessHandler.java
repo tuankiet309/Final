@@ -50,13 +50,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .path("/")
                 .maxAge(Duration.ofHours(1))
                 .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
-                .httpOnly(true)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        response.addHeader("Refresh-Token", refresh);
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/";

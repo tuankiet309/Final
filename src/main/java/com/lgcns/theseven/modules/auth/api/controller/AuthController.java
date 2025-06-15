@@ -3,7 +3,6 @@ package com.lgcns.theseven.modules.auth.api.controller;
 import com.lgcns.theseven.modules.auth.application.service.AuthService;
 import com.lgcns.theseven.modules.auth.application.dto.*;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import java.time.Duration;
@@ -22,7 +21,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@Validated @RequestBody RegisterRequest request,
                                                  HttpServletResponse response) {
         AuthResponse auth = authService.register(request);
-        addCookies(response, auth);
+        addAccessCookie(response, auth);
         return ResponseEntity.ok(auth);
     }
 
@@ -36,26 +35,15 @@ public class AuthController {
     public ResponseEntity<AuthResponse> confirmLogin(@RequestParam String token,
                                                      HttpServletResponse response) {
         AuthResponse auth = authService.confirmLogin(token);
-        addCookies(response, auth);
+        addAccessCookie(response, auth);
         return ResponseEntity.ok(auth);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@Validated @RequestBody RefreshRequest request,
-                                                HttpServletResponse response,
-                                                HttpServletRequest httpRequest) {
-        if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
-            if (httpRequest.getCookies() != null) {
-                for (var cookie : httpRequest.getCookies()) {
-                    if ("refreshToken".equals(cookie.getName())) {
-                        request.setRefreshToken(cookie.getValue());
-                        break;
-                    }
-                }
-            }
-        }
+                                                HttpServletResponse response) {
         AuthResponse auth = authService.refresh(request);
-        addCookies(response, auth);
+        addAccessCookie(response, auth);
         return ResponseEntity.ok(auth);
     }
 
@@ -70,18 +58,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.verifyOtp(request));
     }
 
-    private void addCookies(HttpServletResponse response, AuthResponse auth) {
+    private void addAccessCookie(HttpServletResponse response, AuthResponse auth) {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", auth.getAccessToken())
                 .httpOnly(true)
                 .path("/")
                 .maxAge(Duration.ofHours(1))
                 .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", auth.getRefreshToken())
-                .httpOnly(true)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 }
