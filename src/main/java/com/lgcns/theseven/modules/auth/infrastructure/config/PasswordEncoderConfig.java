@@ -6,8 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Separate configuration for PasswordEncoder to avoid circular dependency
- * during configuration class initialization.
+ * Đừng bao giờ nhét class này vào chung 1 file với class khác hoặc ăn l
  */
 @Configuration
 public class PasswordEncoderConfig {

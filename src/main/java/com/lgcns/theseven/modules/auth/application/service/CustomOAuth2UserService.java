@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * Load or create user information from OAuth2 provider.
+ * Nghịch thử Login Google
  */
 @Service
 @RequiredArgsConstructor

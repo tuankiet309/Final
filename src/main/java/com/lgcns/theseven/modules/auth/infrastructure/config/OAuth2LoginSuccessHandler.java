@@ -57,7 +57,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Refresh-Token", refresh);
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/";
+        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/test/public";
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
