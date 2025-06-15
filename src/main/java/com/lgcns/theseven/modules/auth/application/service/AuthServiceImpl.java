@@ -58,7 +58,10 @@ public class AuthServiceImpl implements AuthService {
             String verifyKey = "emailVerify:" + verifyToken;
             redisTemplate.opsForValue().set(verifyKey, saved.getId().toString(), Duration.ofDays(1));
             emailService.sendRegistrationConfirmation(saved.getEmail(), verifyToken);
-            String access = tokenProvider.generateAccessToken(saved.getId().toString(), Map.of("roles", List.of("USER")));
+            String access = tokenProvider.generateAccessToken(
+                    saved.getId().toString(),
+                    Map.of("roles", List.of("ROLE_USER"))
+            );
             String refresh = tokenProvider.generateRefreshToken(saved.getId().toString());
             saveRefreshToken(saved.getId(), refresh);
             return new AuthResponse(access, refresh);
@@ -94,7 +97,12 @@ public class AuthServiceImpl implements AuthService {
         UserEntity entity = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String access = tokenProvider.generateAccessToken(entity.getId().toString(), Map.of("roles", extractRoleNames(entity.getRoles())));
+        String access = tokenProvider.generateAccessToken(
+                entity.getId().toString(),
+                Map.of("roles", extractRoleNames(entity.getRoles()).stream()
+                        .map(r -> "ROLE_" + r)
+                        .toList())
+        );
         String refresh = tokenProvider.generateRefreshToken(entity.getId().toString());
         saveRefreshToken(entity.getId(), refresh);
         return new AuthResponse(access, refresh);
@@ -108,7 +116,16 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid refresh token");
         }
         redisTemplate.delete(key);
-        String access = tokenProvider.generateAccessToken(userId, Map.of());
+
+        UserEntity user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String access = tokenProvider.generateAccessToken(
+                userId,
+                Map.of("roles", extractRoleNames(user.getRoles()).stream()
+                        .map(r -> "ROLE_" + r)
+                        .toList())
+        );
         String refresh = tokenProvider.generateRefreshToken(userId);
         saveRefreshToken(UUID.fromString(userId), refresh);
         return new AuthResponse(access, refresh);

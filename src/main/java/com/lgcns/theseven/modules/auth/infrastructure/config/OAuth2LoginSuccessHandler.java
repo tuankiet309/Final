@@ -41,7 +41,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
         String userId = (String) oauthUser.getAttribute("userId");
-        String access = tokenProvider.generateAccessToken(userId, Map.of("roles", List.of("USER")));
+        String access = tokenProvider.generateAccessToken(
+                userId,
+                Map.of("roles", List.of("ROLE_USER"))
+        );
         String refresh = tokenProvider.generateRefreshToken(userId);
         saveRefreshToken(UUID.fromString(userId), refresh);
 
