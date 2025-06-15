@@ -5,14 +5,16 @@ import com.lgcns.theseven.common.unitofwork.UnitOfWork;
 import com.lgcns.theseven.modules.auth.application.dto.*;
 import com.lgcns.theseven.modules.auth.application.mapper.*;
 import com.lgcns.theseven.modules.auth.domain.repository.EmailOtpRepository;
-import com.lgcns.theseven.modules.auth.domain.repository.RefreshTokenRepository;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import com.lgcns.theseven.modules.auth.domain.repository.RoleRepository;
 import com.lgcns.theseven.modules.auth.domain.repository.UserRepository;
+import com.lgcns.theseven.modules.auth.application.service.EmailService;
 import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,15 +23,15 @@ import java.util.*;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final StringRedisTemplate redisTemplate;
     private final EmailOtpRepository emailOtpRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final UnitOfWork unitOfWork;
+    private final EmailService emailService;
 
     private final UserMapper userMapper = new UserMapperImpl();
     private final RoleMapper roleMapper = new RoleMapperImpl();
-    private final RefreshTokenMapper refreshTokenMapper = new RefreshTokenMapperImpl();
     private final EmailOtpMapper emailOtpMapper = new EmailOtpMapperImpl();
 
     @Override
@@ -74,16 +76,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse refresh(RefreshRequest request) {
-        RefreshTokenEntity token = refreshTokenRepository.findByToken(request.getRefreshToken())
-                .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
-        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
-            refreshTokenRepository.deleteById(token.getId());
-            throw new RuntimeException("Expired refresh token");
+        String key = "refreshToken:" + request.getRefreshToken();
+        String userId = redisTemplate.opsForValue().get(key);
+        if (userId == null) {
+            throw new RuntimeException("Invalid refresh token");
         }
-        String access = tokenProvider.generateAccessToken(token.getUserId().toString(), Map.of());
-        String refresh = tokenProvider.generateRefreshToken(token.getUserId().toString());
-        saveRefreshToken(token.getUserId(), refresh);
-        refreshTokenRepository.deleteById(token.getId());
+        redisTemplate.delete(key);
+        String access = tokenProvider.generateAccessToken(userId, Map.of());
+        String refresh = tokenProvider.generateRefreshToken(userId);
+        saveRefreshToken(UUID.fromString(userId), refresh);
         return new AuthResponse(access, refresh);
     }
 
@@ -97,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
         otp.setCode(code);
         otp.setExpiryDate(LocalDateTime.now().plusMinutes(10));
         emailOtpRepository.save(otp);
-        // Here should send email code using EmailService
+        emailService.sendOtp(user.getEmail(), code);
     }
 
     @Override
@@ -117,11 +118,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void saveRefreshToken(UUID userId, String token) {
-        RefreshTokenEntity entity = new RefreshTokenEntity();
-        entity.setUserId(userId);
-        entity.setToken(token);
-        entity.setExpiryDate(LocalDateTime.now().plusDays(1));
-        refreshTokenRepository.save(entity);
+        String key = "refreshToken:" + token;
+        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofDays(1));
     }
 
     private List<String> extractRoleNames(Set<RoleEntity> roles) {

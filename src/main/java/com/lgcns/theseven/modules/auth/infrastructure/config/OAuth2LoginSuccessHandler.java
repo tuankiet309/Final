@@ -1,11 +1,13 @@
 package com.lgcns.theseven.modules.auth.infrastructure.config;
 
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
-import com.lgcns.theseven.modules.auth.infrastructure.persistence.entity.RefreshTokenEntity;
-import com.lgcns.theseven.modules.auth.domain.repository.RefreshTokenRepository;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -13,7 +15,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import java.util.UUID;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final JwtTokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -37,15 +38,22 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String refresh = tokenProvider.generateRefreshToken(userId);
         saveRefreshToken(UUID.fromString(userId), refresh);
 
-        response.setContentType("application/json");
-        response.getWriter().write("{\"accessToken\":\"" + access + "\",\"refreshToken\":\"" + refresh + "\"}");
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 
     private void saveRefreshToken(UUID userId, String token) {
-        RefreshTokenEntity entity = new RefreshTokenEntity();
-        entity.setUserId(userId);
-        entity.setToken(token);
-        entity.setExpiryDate(LocalDateTime.now().plusDays(1));
-        refreshTokenRepository.save(entity);
+        String key = "refreshToken:" + token;
+        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofDays(1));
     }
 }
