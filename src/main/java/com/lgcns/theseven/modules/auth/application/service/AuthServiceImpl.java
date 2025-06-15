@@ -54,6 +54,10 @@ public class AuthServiceImpl implements AuthService {
                     });
             entity.setRoles(Set.of(role));
             UserEntity saved = userRepository.save(entity);
+            String verifyToken = UUID.randomUUID().toString();
+            String verifyKey = "emailVerify:" + verifyToken;
+            redisTemplate.opsForValue().set(verifyKey, saved.getId().toString(), Duration.ofDays(1));
+            emailService.sendRegistrationConfirmation(saved.getEmail(), verifyToken);
             String access = tokenProvider.generateAccessToken(saved.getId().toString(), Map.of("roles", List.of("USER")));
             String refresh = tokenProvider.generateRefreshToken(saved.getId().toString());
             saveRefreshToken(saved.getId(), refresh);
@@ -67,6 +71,9 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
         if (!passwordEncoder.matches(request.getPassword(), entity.getPassword())) {
             throw new RuntimeException("Invalid credentials");
+        }
+        if (!entity.isEmailVerified()) {
+            throw new RuntimeException("Email not verified");
         }
 
         String token = UUID.randomUUID().toString();
@@ -134,6 +141,20 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
         emailOtpRepository.deleteById(otp.get().getId());
         return true;
+    }
+
+    @Override
+    public void confirmEmail(String token) {
+        String key = "emailVerify:" + token;
+        String userId = redisTemplate.opsForValue().get(key);
+        if (userId == null) {
+            throw new RuntimeException("Invalid or expired verification token");
+        }
+        redisTemplate.delete(key);
+        UserEntity user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEmailVerified(true);
+        userRepository.save(user);
     }
 
     private void saveRefreshToken(UUID userId, String token) {

@@ -39,6 +39,12 @@ public class AuthController {
         return ResponseEntity.ok(auth);
     }
 
+    @GetMapping("/confirm-email")
+    public ResponseEntity<Void> confirmEmail(@RequestParam String token) {
+        authService.confirmEmail(token);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@Validated @RequestBody RefreshRequest request,
                                                 HttpServletResponse response) {

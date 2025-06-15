@@ -16,6 +16,11 @@ public interface AuthService {
      */
     AuthResponse confirmLogin(String token);
 
+    /**
+     * Verify registration by validating the email confirmation token.
+     */
+    void confirmEmail(String token);
+
     AuthResponse refresh(RefreshRequest request);
     void requestOtp(String email);
     boolean verifyOtp(OtpRequest request);
