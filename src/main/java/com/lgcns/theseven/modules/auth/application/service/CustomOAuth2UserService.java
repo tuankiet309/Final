@@ -52,8 +52,13 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         return roleRepository.save(r);
                     });
             newUser.setRoles(Set.of(role));
+            newUser.setEmailVerified(true);
             return userRepository.save(newUser);
         });
+        if (!user.isEmailVerified()) {
+            user.setEmailVerified(true);
+            userRepository.save(user);
+        }
 
         Map<String, Object> attributes = new HashMap<>(oauthUser.getAttributes());
         attributes.put("userId", user.getId().toString());
