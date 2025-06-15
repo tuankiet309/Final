@@ -26,9 +26,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**").authenticated()
+                        .requestMatchers("/auth/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .requestMatchers("/auth/test/me").authenticated()
                         .requestMatchers("/auth/test/hello").authenticated()
+                        .requestMatchers("/test/public").permitAll()             // Không cần auth
+                        .requestMatchers("/test/authenticated", "/test/user", "/test/admin").authenticated() // Cần đăng nhập
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
