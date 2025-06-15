@@ -62,12 +62,31 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponse login(LoginRequest request) {
+    public void login(LoginRequest request) {
         UserEntity entity = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Invalid credentials"));
         if (!passwordEncoder.matches(request.getPassword(), entity.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
+
+        String token = UUID.randomUUID().toString();
+        String key = "loginConfirm:" + token;
+        redisTemplate.opsForValue().set(key, entity.getId().toString(), Duration.ofMinutes(15));
+        emailService.sendLoginConfirmation(entity.getEmail(), token);
+    }
+
+    @Override
+    public AuthResponse confirmLogin(String token) {
+        String key = "loginConfirm:" + token;
+        String userId = redisTemplate.opsForValue().get(key);
+        if (userId == null) {
+            throw new RuntimeException("Invalid or expired confirmation token");
+        }
+        redisTemplate.delete(key);
+
+        UserEntity entity = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         String access = tokenProvider.generateAccessToken(entity.getId().toString(), Map.of("roles", extractRoleNames(entity.getRoles())));
         String refresh = tokenProvider.generateRefreshToken(entity.getId().toString());
         saveRefreshToken(entity.getId(), refresh);

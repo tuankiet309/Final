@@ -27,9 +27,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Validated @RequestBody LoginRequest request,
-                                              HttpServletResponse response) {
-        AuthResponse auth = authService.login(request);
+    public ResponseEntity<String> login(@Validated @RequestBody LoginRequest request) {
+        authService.login(request);
+        return ResponseEntity.ok("Confirmation email sent");
+    }
+
+    @GetMapping("/login/confirm")
+    public ResponseEntity<AuthResponse> confirmLogin(@RequestParam String token,
+                                                     HttpServletResponse response) {
+        AuthResponse auth = authService.confirmLogin(token);
         addCookies(response, auth);
         return ResponseEntity.ok(auth);
     }
