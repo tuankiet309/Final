@@ -8,26 +8,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-    // Không cần xác thực
     @GetMapping("/test/public")
     public String publicApi() {
         return "Hello world - PUBLIC";
     }
 
-    // Chỉ cần đăng nhập (không yêu cầu role)
     @GetMapping("/test/authenticated")
     public String authenticatedApi() {
         return "Hello world - AUTHENTICATED";
     }
 
-    // Yêu cầu đăng nhập và role 'ADMIN'
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/test/admin")
     public String adminOnlyApi() {
         return "Hello world - ADMIN ONLY";
     }
 
-    // Yêu cầu đăng nhập và role 'USER'
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/test/user")
     public String userOnlyApi() {
