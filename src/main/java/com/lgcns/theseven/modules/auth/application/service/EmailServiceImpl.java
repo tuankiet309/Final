@@ -14,7 +14,7 @@ public class EmailServiceImpl implements EmailService {
     @Value("${app.mail.from:no-reply@example.com}")
     private String from;
 
-    @Value("${app.base-url:http://localhost:8080}")
+    @Value("${app.base-url:http://localhost:8081/test/public}")
     private String baseUrl;
 
     @Override

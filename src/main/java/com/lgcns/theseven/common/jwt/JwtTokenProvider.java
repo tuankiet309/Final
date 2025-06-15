@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long accessTokenValidity = 3600; // seconds
+    private final long accessTokenValidity = 100; // seconds
     private final long refreshTokenValidity = 86400; // seconds
 
     public String generateAccessToken(String subject, Map<String, Object> claims) {
