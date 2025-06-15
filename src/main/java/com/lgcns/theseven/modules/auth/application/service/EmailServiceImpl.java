@@ -14,6 +14,9 @@ public class EmailServiceImpl implements EmailService {
     @Value("${app.mail.from:no-reply@example.com}")
     private String from;
 
+    @Value("${app.base-url:http://localhost:8080}")
+    private String baseUrl;
+
     @Override
     public void sendOtp(String to, String code) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -21,6 +24,17 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(to);
         message.setSubject("OTP Verification");
         message.setText("Your OTP code is: " + code);
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendLoginConfirmation(String to, String token) {
+        String link = baseUrl + "/auth/login/confirm?token=" + token;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject("Login Confirmation");
+        message.setText("Click the following link to complete your login: " + link);
         mailSender.send(message);
     }
 }
