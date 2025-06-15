@@ -17,7 +17,7 @@ Theo kiến trúc Modulith (Tách Module trong Monolith) và Domain Driven Desig
 - Spring Mail
 - ModelMapper, Lombok, SpringDoc OpenAPI
 
-Kiến trúc DDD của từng module như sau:
+##Kiến trúc DDD của từng module như sau:
 
 1. domain/
 - Entity, Value Object, Aggregate Root
@@ -39,7 +39,7 @@ Kiến trúc DDD của từng module như sau:
 - Xử lý validate, mapping dữ liệu request vào service
 5. Event để giao tiếp giữa các module
 
-Luồng xử lí request như sau:
+##Luồng xử lí request như sau:
 - Client gửi request (JSON DTO) → Controller nhận DTO
 - Controller gọi Application Service → truyền DTO
 - Application Service → map DTO thành Domain Model/Entity → gọi Domain/Repo (nếu không có nghiệp vụ đặc biệt thì bỏ qua domain model và domain service)
