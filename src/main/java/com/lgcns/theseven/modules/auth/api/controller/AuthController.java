@@ -1,5 +1,6 @@
 package com.lgcns.theseven.modules.auth.api.controller;
 
+import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import com.lgcns.theseven.modules.auth.application.service.AuthService;
 import com.lgcns.theseven.modules.auth.application.dto.*;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
+    private final JwtTokenProvider  jwtTokenProvider;
     private final AuthService authService;
 
     @PostMapping("/register")
@@ -68,7 +70,7 @@ public class AuthController {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", auth.getAccessToken())
                 .httpOnly(true)
                 .path("/")
-                .maxAge(Duration.ofHours(1))
+                .maxAge(Duration.ofSeconds(jwtTokenProvider.getAccessTokenValidity()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
     }

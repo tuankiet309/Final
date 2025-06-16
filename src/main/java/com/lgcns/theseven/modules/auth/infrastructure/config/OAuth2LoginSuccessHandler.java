@@ -34,7 +34,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtTokenProvider tokenProvider;
     private final StringRedisTemplate redisTemplate;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-    private final RequestCache requestCache = new HttpSessionRequestCache();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -56,8 +55,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader("Refresh-Token", refresh);
 
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
-        String targetUrl = savedRequest != null ? savedRequest.getRedirectUrl() : "/test/public";
+        String targetUrl = "/test/public";
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 
