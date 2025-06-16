@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,8 +15,10 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long accessTokenValidity = 3600; // seconds
-    private final long refreshTokenValidity = 86400; // seconds
+    @Value("${jwt.access-token-validity:3600}")
+    private long accessTokenValidity;
+    @Value("${jwt.refresh-token-validity:86400}")
+    private long refreshTokenValidity;
 
     public String generateAccessToken(String subject, Map<String, Object> claims) {
         Instant now = Instant.now();
@@ -40,5 +43,9 @@ public class JwtTokenProvider {
 
     public Claims parseToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public long getRefreshTokenValidity() {
+        return refreshTokenValidity;
     }
 }

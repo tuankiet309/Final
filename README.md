@@ -52,5 +52,6 @@ Các chức năng chính:
 - Đăng ký tài khoản và gửi email xác nhận.
 - Đăng nhập qua email/ mật khẩu, yêu cầu xác nhận qua email trước khi phát hành JWT.
 - Refresh token và lưu trữ refresh token trên Redis.
+- Thời gian sống của access token và refresh token có thể cấu hình qua file `application.properties`.
 - Gửi và xác thực OTP để xác thực email.
 - Tích hợp đăng nhập OAuth2 thông qua Spring Security.
