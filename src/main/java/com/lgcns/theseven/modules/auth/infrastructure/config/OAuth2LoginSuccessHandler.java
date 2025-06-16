@@ -51,7 +51,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", access)
                 .httpOnly(true)
                 .path("/")
-                .maxAge(Duration.ofHours(1))
+                .maxAge(Duration.ofSeconds(tokenProvider.getAccessTokenValidity()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader("Refresh-Token", refresh);
@@ -63,6 +63,6 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private void saveRefreshToken(UUID userId, String token) {
         String key = "refreshToken:" + token;
-        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofDays(1));
+        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofSeconds(tokenProvider.getRefreshTokenValidity()));
     }
 }

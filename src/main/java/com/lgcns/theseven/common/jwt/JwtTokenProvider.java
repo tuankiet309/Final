@@ -15,9 +15,9 @@ import java.util.Map;
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    @Value("${jwt.access-token-validity:3600}")
+    @Value("${jwt.access-token-validity}")
     private long accessTokenValidity;
-    @Value("${jwt.refresh-token-validity:86400}")
+    @Value("${jwt.refresh-token-validity}")
     private long refreshTokenValidity;
 
     public String generateAccessToken(String subject, Map<String, Object> claims) {
@@ -47,5 +47,8 @@ public class JwtTokenProvider {
 
     public long getRefreshTokenValidity() {
         return refreshTokenValidity;
+    }
+    public long getAccessTokenValidity() {
+        return accessTokenValidity;
     }
 }
