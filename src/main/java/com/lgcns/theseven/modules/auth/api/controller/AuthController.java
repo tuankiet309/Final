@@ -72,6 +72,12 @@ public class AuthController {
                 .path("/")
                 .maxAge(Duration.ofSeconds(jwtTokenProvider.getAccessTokenValidity()))
                 .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", auth.getRefreshToken())
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofSeconds(jwtTokenProvider.getRefreshTokenValidity()))
+                .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
     }
 }

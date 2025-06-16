@@ -52,7 +52,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 .path("/")
                 .maxAge(Duration.ofSeconds(tokenProvider.getAccessTokenValidity()))
                 .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refresh)
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ofSeconds(tokenProvider.getRefreshTokenValidity()))
+                .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
         response.addHeader("Refresh-Token", refresh);
 
         String targetUrl = "/test/public";

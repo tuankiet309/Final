@@ -3,6 +3,7 @@ package com.lgcns.theseven.modules.auth.infrastructure.config;
 import com.lgcns.theseven.common.jwt.JwtTokenProvider;
 import com.lgcns.theseven.modules.auth.application.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ public class SecurityConfig {
     private final JwtTokenProvider tokenProvider;
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2LoginSuccessHandler successHandler;
+    private final StringRedisTemplate redisTemplate;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,7 +39,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(info -> info.userService(oAuth2UserService))
                         .successHandler(successHandler)
                 )
-                .addFilterBefore(new JwtTokenFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
