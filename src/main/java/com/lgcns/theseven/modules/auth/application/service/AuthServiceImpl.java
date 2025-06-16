@@ -176,7 +176,8 @@ public class AuthServiceImpl implements AuthService {
 
     private void saveRefreshToken(UUID userId, String token) {
         String key = "refreshToken:" + token;
-        redisTemplate.opsForValue().set(key, userId.toString(), Duration.ofDays(1));
+        redisTemplate.opsForValue().set(key, userId.toString(),
+                Duration.ofSeconds(tokenProvider.getRefreshTokenValidity()));
     }
 
     private List<String> extractRoleNames(Set<RoleEntity> roles) {
